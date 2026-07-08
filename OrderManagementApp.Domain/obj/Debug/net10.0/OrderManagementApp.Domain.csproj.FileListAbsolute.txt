@@ -1,0 +1,11 @@
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\bin\Debug\net10.0\OrderManagementApp.Domain.deps.json
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\bin\Debug\net10.0\OrderManagementApp.Domain.dll
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\bin\Debug\net10.0\OrderManagementApp.Domain.pdb
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\obj\Debug\net10.0\OrderManagementApp.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\obj\Debug\net10.0\OrderManagementApp.Domain.AssemblyInfoInputs.cache
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\obj\Debug\net10.0\OrderManagementApp.Domain.AssemblyInfo.cs
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\obj\Debug\net10.0\OrderManagementApp.Domain.csproj.CoreCompileInputs.cache
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\obj\Debug\net10.0\OrderManagementApp.Domain.dll
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\obj\Debug\net10.0\refint\OrderManagementApp.Domain.dll
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\obj\Debug\net10.0\OrderManagementApp.Domain.pdb
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Domain\obj\Debug\net10.0\ref\OrderManagementApp.Domain.dll

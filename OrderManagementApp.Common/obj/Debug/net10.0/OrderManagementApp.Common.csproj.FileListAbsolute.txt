@@ -1,0 +1,15 @@
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\bin\Debug\net10.0\OrderManagementApp.Common.deps.json
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\bin\Debug\net10.0\OrderManagementApp.Common.dll
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\bin\Debug\net10.0\OrderManagementApp.Common.pdb
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\bin\Debug\net10.0\OrderManagementApp.Domain.dll
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\bin\Debug\net10.0\OrderManagementApp.Domain.pdb
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\obj\Debug\net10.0\OrderManagementApp.Common.csproj.AssemblyReference.cache
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\obj\Debug\net10.0\OrderManagementApp.Common.GeneratedMSBuildEditorConfig.editorconfig
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\obj\Debug\net10.0\OrderManagementApp.Common.AssemblyInfoInputs.cache
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\obj\Debug\net10.0\OrderManagementApp.Common.AssemblyInfo.cs
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\obj\Debug\net10.0\OrderManagementApp.Common.csproj.CoreCompileInputs.cache
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\obj\Debug\net10.0\OrderMan.9737793D.Up2Date
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\obj\Debug\net10.0\OrderManagementApp.Common.dll
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\obj\Debug\net10.0\refint\OrderManagementApp.Common.dll
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\obj\Debug\net10.0\OrderManagementApp.Common.pdb
+C:\Vinod\ASP.Net Core\OrderManagementApp\OrderManagementApp\OrderManagementApp.Common\obj\Debug\net10.0\ref\OrderManagementApp.Common.dll

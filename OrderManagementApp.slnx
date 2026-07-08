@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="OrderManagementApp.API/OrderManagementApp.API.csproj" />
+  <Project Path="OrderManagementApp.BLL/OrderManagementApp.BLL.csproj" />
+  <Project Path="OrderManagementApp.Common/OrderManagementApp.Common.csproj" />
+  <Project Path="OrderManagementApp.DAL/OrderManagementApp.DAL.csproj" />
+  <Project Path="OrderManagementApp.Domain/OrderManagementApp.Domain.csproj" />
+</Solution>

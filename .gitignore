@@ -1,0 +1,34 @@
+## .NET / Visual Studio standard ignores
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test results
+[Tt]est[Rr]esult*/

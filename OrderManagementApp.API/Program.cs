@@ -29,6 +29,7 @@ var sinkOptions = new MSSqlServerSinkOptions
     AutoCreateSqlTable = false,
 };
 
+
 var columnOptions = new ColumnOptions();
 columnOptions.Store.Remove(StandardColumn.Properties);
 columnOptions.Store.Add(StandardColumn.Properties);
@@ -48,6 +49,17 @@ Log.Logger = new LoggerConfiguration()
                                         columnOptions: columnOptions)
                              .CreateLogger();
 builder.Host.UseSerilog();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuditInterceptor>();
@@ -151,6 +163,7 @@ if(app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAngular");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

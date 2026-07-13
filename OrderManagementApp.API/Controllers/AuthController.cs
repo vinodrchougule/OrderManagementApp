@@ -17,6 +17,8 @@ namespace OrderManagementApp.API.Controllers
             _authService = authService;
         }
 
+        //Test changes to test on this laptop
+
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<ActionResult<AuthResponse>> RegisterUserAsync(RegisterUserRequest registerUserRequest, CancellationToken ct)

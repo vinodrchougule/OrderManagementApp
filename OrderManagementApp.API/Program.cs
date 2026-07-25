@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using OrderManagementApp.API.Middleware;
+using OrderManagementApp.API.Services;
 using OrderManagementApp.BLL.Interfaces;
 using OrderManagementApp.BLL.Services;
 using OrderManagementApp.Common.Data;
@@ -61,6 +62,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuditInterceptor>();
 
@@ -160,6 +163,7 @@ if(app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.MapGrpcReflectionService();
 }
 
 app.UseHttpsRedirection();
@@ -167,6 +171,7 @@ app.UseCors("AllowAngular");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGrpcService<GrpcOrderService>();
 
 try
 {

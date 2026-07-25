@@ -98,6 +98,7 @@ builder.Services.AddAuthentication(options =>
                     {
                         OnAuthenticationFailed = context =>
                         {
+                            Log.Warning(context.Exception, "JWT authentication failed");
                             return Task.CompletedTask;
                         }
                     };

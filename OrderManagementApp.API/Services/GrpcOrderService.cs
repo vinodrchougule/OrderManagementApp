@@ -1,6 +1,7 @@
 ﻿// Lives in OrderManagementApp.API project, e.g. Services/GrpcOrderService.cs
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 using OrderManagementApp.API.Protos; // wherever your csharp_namespace points
 using OrderManagementApp.BLL.Interfaces;
 using OrderManagementApp.BLL.Services;
@@ -8,6 +9,7 @@ using OrderManagementApp.Common.DTOs; // your existing BLL service interface
 
 namespace OrderManagementApp.API.Services
 {
+    [Authorize]
     public class GrpcOrderService : OrderGrpcService.OrderGrpcServiceBase
     {
         private readonly IOrderService _orderService;
@@ -20,13 +22,10 @@ namespace OrderManagementApp.API.Services
         public override async Task<OrderReply> GetOrderById(
             GetOrderRequest request, ServerCallContext context)
         {
-            var order = await _orderService.GetByIdAsync(request.OrderId, context.CancellationToken);
-
-            if (order == null)
-            {
-                throw new RpcException(new Status(StatusCode.NotFound,
+            var userId = context.GetHttpContext().User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            
+            var order = await _orderService.GetByIdAsync(request.OrderId, context.CancellationToken) ?? throw new RpcException(new Status(StatusCode.NotFound,
                     $"Order with id {request.OrderId} was not found."));
-            }
 
             // map order -> OrderReply, return it
             var reply = new OrderReply
@@ -44,7 +43,7 @@ namespace OrderManagementApp.API.Services
             {
                 reply.OrderItems.Add(new OrderItem
                 {
-                    OrderItemId = Convert.ToInt32(item.OrderItemId),   // adjust field names if different
+                    OrderItemId = Convert.ToInt32(item.OrderItemId),
                     ItemId = item.ItemId,
                     Quantity = item.Quantity,
                     UnitPrice = item.UnitPrice.ToString(),

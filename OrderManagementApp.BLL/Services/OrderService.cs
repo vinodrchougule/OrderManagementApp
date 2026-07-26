@@ -90,6 +90,39 @@ namespace OrderManagementApp.BLL.Services
 
         }
 
+        public async Task<PagedResult<OrderResponse>> SearchAsync(string searchText, int pageNo, int pageSize, CancellationToken ct = default)
+        {
+            var orders = await _orderRepository.SearchAsync(searchText, pageNo, pageSize, ct);
+
+            var orderResponseDTOs = orders.Items.Select(order => new OrderResponse
+            {
+                OrderId = order.OrderId,
+                OrderDate = order.OrderDate,
+                CustomerId = order.CustomerId,
+                CustomerName = order.Customer?.CustomerName,
+                TotalAmount = order.TotalAmount,
+                Status = order.Status,
+                RowVersion = order.RowVersion,
+                OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
+                {
+                    OrderItemId = oi.OrderItemId,
+                    ItemId = oi.ItemId,
+                    ItemName = oi.Item?.ItemName,
+                    Quantity = oi.Quantity,
+                    UnitPrice = oi.UnitPrice,
+                    LineTotal = oi.Quantity * oi.UnitPrice
+                }).ToList()
+            }).ToList();
+
+            return new PagedResult<OrderResponse>
+            {
+                Items = orderResponseDTOs,
+                TotalCount = orders.TotalCount,
+                PageNo = orders.PageNo,
+                PageSize = orders.PageSize
+            };
+        }
+
         public async Task<bool> UpdateAsync(int id, UpdateOrderRequest dto, CancellationToken ct = default)
         {
             var validationResult = await _updateOrderRequestValidator.ValidateAsync(dto, ct);

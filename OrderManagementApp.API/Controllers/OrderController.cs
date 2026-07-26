@@ -61,6 +61,19 @@ namespace OrderManagementApp.API.Controllers
             return Ok(orders);
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<List<OrderResponse>>> Search([FromQuery] string searchText, [FromQuery] PagedRequest pagedRequest, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(searchText))
+                return BadRequest("Search text is required.");
+
+            if (pagedRequest.PageNo < 1)
+                return BadRequest("Invalid Page No.");
+
+            var orders = await _orderService.SearchAsync(searchText, pagedRequest.PageNo, pagedRequest.PageSize, ct);
+            return Ok(orders);
+        }
+
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Update(int id, [FromBody] UpdateOrderRequest updateOrderRequest, CancellationToken ct)
         {

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using OrderManagementApp.Common.Data;
 using OrderManagementApp.Common.DTOs;
 using OrderManagementApp.Domain.Entities;
+using OrderManagementApp.Domain.Enums;
 using OrderManagementApp.Domain.Interfaces;
 using OrderManagementApp.Domain.Models;
 using System.Data;
@@ -155,6 +156,41 @@ namespace OrderManagementApp.DAL.Repositories
             //                        .Include(oi => oi.OrderItems).ThenInclude(i => i.Item)
             //                        .OrderByDescending(o => o.OrderDate)
             //                        .ToListAsync(ct);
+        }
+
+        public async Task<PagedResult<Order>> SearchAsync(string searchText, int PageNo, int PageSize, CancellationToken ct = default)
+        {
+            _logger.LogInformation("Searching orders for {SearchText}..", searchText);
+
+            var searchPattern = $"%{searchText}%";
+
+            var matchingStatuses = Enum.GetValues<OrderStatus>()
+                                        .Where(s => s.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                                        .ToList();
+
+            var query = _dbContext.Orders
+                                   .AsNoTracking()
+                                   .Include(o => o.Customer)
+                                   .Include(o => o.OrderItems).ThenInclude(oi => oi.Item)
+                                   .Where(o => EF.Functions.Like(o.Customer!.CustomerName, searchPattern) ||
+                                               matchingStatuses.Contains(o.Status) ||
+                                               EF.Functions.Like(o.OrderId.ToString(), searchPattern) ||
+                                               o.OrderItems.Any(oi => EF.Functions.Like(oi.Item!.ItemName, searchPattern)))
+                                   .OrderByDescending(o => o.OrderDate);
+
+            var totalCount = await query.CountAsync(ct);
+
+            var orders = await query.Skip((PageNo - 1) * PageSize)
+                                     .Take(PageSize)
+                                     .ToListAsync(ct);
+
+            return new PagedResult<Order>
+            {
+                Items = orders,
+                TotalCount = totalCount,
+                PageNo = PageNo,
+                PageSize = PageSize
+            };
         }
 
         public async Task<bool> UpdateAsync(int id, Order incomingOrder, CancellationToken ct = default)

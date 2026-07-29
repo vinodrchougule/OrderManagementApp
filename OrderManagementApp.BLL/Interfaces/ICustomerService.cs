@@ -1,0 +1,12 @@
+using OrderManagementApp.Common.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace OrderManagementApp.BLL.Interfaces
+{
+    public interface ICustomerService
+    {
+        Task<CustomerResponse> CreateAsync(CreateCustomerRequest dto, CancellationToken ct = default);
+    }
+}

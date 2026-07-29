@@ -24,6 +24,10 @@ namespace OrderManagementApp.DAL.Configurations
                     .HasColumnName("CustomerName")
                     .HasColumnType("varchar(100)")
                     .IsRequired();
+
+            builder.HasIndex(c => c.CustomerName)
+                   .IsUnique()
+                   .HasDatabaseName("UQ_Customer_CustomerName");
         }
     }
 }

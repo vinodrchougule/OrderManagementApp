@@ -37,6 +37,7 @@ namespace OrderManagementApp.DAL.Repositories
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while creating user.");
                 await dbContextTransaction.RollbackAsync(ct);
                 throw;
             }
@@ -80,6 +81,7 @@ namespace OrderManagementApp.DAL.Repositories
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while updating refresh token for user with ID {UserId}.", userId);
                 throw;
             }
         }

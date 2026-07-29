@@ -29,16 +29,27 @@ namespace OrderManagementApp.API.Middleware
                 context.Response.ContentType = "application/json";
                 _logger.LogError(ex.Message);
 
-                var errors = ex.Errors
-                                .GroupBy(e => e.PropertyName)
-                                .ToDictionary(g => g.Key,g => g.Select(e => e.ErrorMessage)).ToArray();
-                
-                await context.Response.WriteAsync(JsonSerializer.Serialize(new 
+                if (ex.Errors != null && ex.Errors.Any())
                 {
-                    status = 400,
-                    message = "Validation failed",
-                    errors
-                }));
+                    var errors = ex.Errors
+                                    .GroupBy(e => e.PropertyName)
+                                    .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage)).ToArray();
+
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(new
+                    {
+                        status = 400,
+                        message = "Validation failed",
+                        errors
+                    }));
+                }
+                else
+                {
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(new
+                    {
+                        status = 400,
+                        message = ex.Message
+                    }));
+                }
             }
             catch(NotFoundException ex)
             {

@@ -39,5 +39,12 @@ namespace OrderManagementApp.BLL.Services
 
             return CustomerMapper.ToResponse(created);
         }
+
+        public async Task<List<CustomerResponse>> GetAllAsync(CancellationToken ct = default)
+        {
+            var customers = await _customerRepository.GetAllAsync(ct);
+
+            return CustomerMapper.ToResponseList(customers);
+        }
     }
 }

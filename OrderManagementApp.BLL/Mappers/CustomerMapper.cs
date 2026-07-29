@@ -16,5 +16,7 @@ namespace OrderManagementApp.BLL.Mappers
 
         [MapperIgnoreSource(nameof(Customer.Orders))]
         public static partial CustomerResponse ToResponse(Customer customer);
+
+        public static partial List<CustomerResponse> ToResponseList(List<Customer> customers);
     }
 }

@@ -25,5 +25,12 @@ namespace OrderManagementApp.API.Controllers
             var customer = await _customerService.CreateAsync(createCustomerRequest, ct);
             return Ok(customer);
         }
+
+        [HttpGet]
+        public async Task<ActionResult<List<CustomerResponse>>> GetAll(CancellationToken ct)
+        {
+            var customers = await _customerService.GetAllAsync(ct);
+            return Ok(customers);
+        }
     }
 }

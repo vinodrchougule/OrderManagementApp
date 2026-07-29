@@ -44,5 +44,13 @@ namespace OrderManagementApp.DAL.Repositories
                                     .AsNoTracking()
                                     .AnyAsync(c => c.CustomerName == customerName, ct);
         }
+
+        public async Task<List<Customer>> GetAllAsync(CancellationToken ct = default)
+        {
+            return await _dbContext.Customers
+                                    .AsNoTracking()
+                                    .OrderBy(c => c.CustomerName)
+                                    .ToListAsync(ct);
+        }
     }
 }

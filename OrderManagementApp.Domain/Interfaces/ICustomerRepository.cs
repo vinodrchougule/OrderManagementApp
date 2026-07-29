@@ -9,5 +9,6 @@ namespace OrderManagementApp.Domain.Interfaces
     {
         Task<Customer> CreateAsync(Customer customer, CancellationToken ct = default);
         Task<bool> ExistsByNameAsync(string customerName, CancellationToken ct = default);
+        Task<List<Customer>> GetAllAsync(CancellationToken ct = default);
     }
 }

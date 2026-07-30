@@ -52,5 +52,14 @@ namespace OrderManagementApp.DAL.Repositories
                                     .OrderBy(c => c.CustomerName)
                                     .ToListAsync(ct);
         }
+
+        public async Task<Customer?> GetByIdAsync(int id, CancellationToken ct = default)
+        {
+            _logger.LogInformation("Fetching customer {CustomerId}..", id);
+
+            return await _dbContext.Customers
+                                    .AsNoTracking()
+                                    .FirstOrDefaultAsync(c => c.Id == id, ct);
+        }
     }
 }

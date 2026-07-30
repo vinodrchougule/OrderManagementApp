@@ -9,5 +9,6 @@ namespace OrderManagementApp.BLL.Interfaces
     {
         Task<CustomerResponse> CreateAsync(CreateCustomerRequest dto, CancellationToken ct = default);
         Task<List<CustomerResponse>> GetAllAsync(CancellationToken ct = default);
+        Task<CustomerResponse> GetByIdAsync(int id, CancellationToken ct = default);
     }
 }

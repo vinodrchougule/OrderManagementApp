@@ -32,5 +32,12 @@ namespace OrderManagementApp.API.Controllers
             var customers = await _customerService.GetAllAsync(ct);
             return Ok(customers);
         }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<CustomerResponse>> GetById(int id, CancellationToken ct)
+        {
+            var customer = await _customerService.GetByIdAsync(id, ct);
+            return Ok(customer);
+        }
     }
 }

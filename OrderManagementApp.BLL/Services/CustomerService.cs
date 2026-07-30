@@ -3,6 +3,7 @@ using OrderManagementApp.BLL.Interfaces;
 using OrderManagementApp.BLL.Mappers;
 using OrderManagementApp.BLL.Validators;
 using OrderManagementApp.Common.DTOs;
+using OrderManagementApp.Common.Exceptions;
 using OrderManagementApp.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,16 @@ namespace OrderManagementApp.BLL.Services
             var customers = await _customerRepository.GetAllAsync(ct);
 
             return CustomerMapper.ToResponseList(customers);
+        }
+
+        public async Task<CustomerResponse> GetByIdAsync(int id, CancellationToken ct = default)
+        {
+            var customer = await _customerRepository.GetByIdAsync(id, ct);
+
+            if (customer is null)
+                throw new NotFoundException("Customer", "id", id);
+
+            return CustomerMapper.ToResponse(customer);
         }
     }
 }

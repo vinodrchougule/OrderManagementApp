@@ -39,5 +39,19 @@ namespace OrderManagementApp.API.Controllers
             var customer = await _customerService.GetByIdAsync(id, ct);
             return Ok(customer);
         }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Update(int id, [FromBody] UpdateCustomerRequest updateCustomerRequest, CancellationToken ct)
+        {
+            if (id != updateCustomerRequest.Id)
+                return BadRequest("Route Id and Request body Id do not match");
+
+            var updated = await _customerService.UpdateAsync(id, updateCustomerRequest, ct);
+
+            if (!updated)
+                return BadRequest("Update failed.");
+
+            return Ok("Updated");
+        }
     }
 }

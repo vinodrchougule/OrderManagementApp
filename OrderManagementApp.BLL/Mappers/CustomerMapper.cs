@@ -14,6 +14,9 @@ namespace OrderManagementApp.BLL.Mappers
         [MapperIgnoreTarget(nameof(Customer.Orders))]
         public static partial Customer ToEntity(CreateCustomerRequest dto);
 
+        [MapperIgnoreTarget(nameof(Customer.Orders))]
+        public static partial Customer ToEntity(UpdateCustomerRequest dto);
+
         [MapperIgnoreSource(nameof(Customer.Orders))]
         public static partial CustomerResponse ToResponse(Customer customer);
 

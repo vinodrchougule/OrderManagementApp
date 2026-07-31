@@ -15,11 +15,13 @@ namespace OrderManagementApp.BLL.Services
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly CreateCustomerRequestValidator _createCustomerRequestValidator;
+        private readonly UpdateCustomerRequestValidator _updateCustomerRequestValidator;
 
         public CustomerService(ICustomerRepository customerRepository)
         {
             _customerRepository = customerRepository;
             _createCustomerRequestValidator = new CreateCustomerRequestValidator();
+            _updateCustomerRequestValidator = new UpdateCustomerRequestValidator();
         }
 
         public async Task<CustomerResponse> CreateAsync(CreateCustomerRequest dto, CancellationToken ct = default)
@@ -29,7 +31,7 @@ namespace OrderManagementApp.BLL.Services
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            var nameExists = await _customerRepository.ExistsByNameAsync(dto.CustomerName, ct);
+            var nameExists = await _customerRepository.ExistsByNameAsync(dto.CustomerName, ct: ct);
 
             if (nameExists)
                 throw new ValidationException("Customer Name already exists.");
@@ -56,6 +58,28 @@ namespace OrderManagementApp.BLL.Services
                 throw new NotFoundException("Customer", "id", id);
 
             return CustomerMapper.ToResponse(customer);
+        }
+
+        public async Task<bool> UpdateAsync(int id, UpdateCustomerRequest dto, CancellationToken ct = default)
+        {
+            var validationResult = await _updateCustomerRequestValidator.ValidateAsync(dto, ct);
+
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
+
+            var nameExists = await _customerRepository.ExistsByNameAsync(dto.CustomerName, dto.Id, ct);
+
+            if (nameExists)
+                throw new ValidationException("Customer Name already exists.");
+
+            var customer = CustomerMapper.ToEntity(dto);
+
+            var updated = await _customerRepository.UpdateAsync(id, customer, ct);
+
+            if (!updated)
+                throw new NotFoundException("Customer", "id", id);
+
+            return updated;
         }
     }
 }

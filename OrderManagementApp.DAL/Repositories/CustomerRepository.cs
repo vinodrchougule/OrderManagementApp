@@ -38,11 +38,11 @@ namespace OrderManagementApp.DAL.Repositories
             }
         }
 
-        public async Task<bool> ExistsByNameAsync(string customerName, CancellationToken ct = default)
+        public async Task<bool> ExistsByNameAsync(string customerName, int? excludeId = null, CancellationToken ct = default)
         {
             return await _dbContext.Customers
                                     .AsNoTracking()
-                                    .AnyAsync(c => c.CustomerName == customerName, ct);
+                                    .AnyAsync(c => c.CustomerName == customerName && (excludeId == null || c.Id != excludeId), ct);
         }
 
         public async Task<List<Customer>> GetAllAsync(CancellationToken ct = default)
@@ -60,6 +60,33 @@ namespace OrderManagementApp.DAL.Repositories
             return await _dbContext.Customers
                                     .AsNoTracking()
                                     .FirstOrDefaultAsync(c => c.Id == id, ct);
+        }
+
+        public async Task<bool> UpdateAsync(int id, Customer customer, CancellationToken ct = default)
+        {
+            await using IDbContextTransaction dbContextTransaction = await _dbContext.Database.BeginTransactionAsync(ct);
+
+            try
+            {
+                var existingCustomer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Id == id, ct);
+
+                if (existingCustomer is null)
+                    return false;
+
+                existingCustomer.CustomerName = customer.CustomerName;
+
+                await _dbContext.SaveChangesAsync(ct);
+                await dbContextTransaction.CommitAsync(ct);
+
+                _logger.LogInformation("Customer id {CustomerId} updated successfully.", id);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await dbContextTransaction.RollbackAsync(ct);
+                _logger.LogError(ex, "Error updating customer id {CustomerId}.", id);
+                throw;
+            }
         }
     }
 }

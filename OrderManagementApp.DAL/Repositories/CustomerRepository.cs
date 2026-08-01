@@ -88,5 +88,38 @@ namespace OrderManagementApp.DAL.Repositories
                 throw;
             }
         }
+
+        public async Task<bool> HasOrdersAsync(int customerId, CancellationToken ct = default)
+        {
+            return await _dbContext.Orders
+                                    .AsNoTracking()
+                                    .AnyAsync(o => o.CustomerId == customerId, ct);
+        }
+
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
+        {
+            await using IDbContextTransaction dbContextTransaction = await _dbContext.Database.BeginTransactionAsync(ct);
+
+            try
+            {
+                var existingCustomer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Id == id, ct);
+
+                if (existingCustomer is null)
+                    return false;
+
+                _dbContext.Customers.Remove(existingCustomer);
+                await _dbContext.SaveChangesAsync(ct);
+                await dbContextTransaction.CommitAsync(ct);
+
+                _logger.LogInformation("Customer id {CustomerId} deleted successfully.", id);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await dbContextTransaction.RollbackAsync(ct);
+                _logger.LogError(ex, "Error deleting customer id {CustomerId}.", id);
+                throw;
+            }
+        }
     }
 }

@@ -53,5 +53,16 @@ namespace OrderManagementApp.API.Controllers
 
             return Ok("Updated");
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id, CancellationToken ct)
+        {
+            var deleted = await _customerService.DeleteAsync(id, ct);
+
+            if (!deleted)
+                return BadRequest("Delete failed.");
+
+            return Ok("Deleted");
+        }
     }
 }

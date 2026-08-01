@@ -12,5 +12,7 @@ namespace OrderManagementApp.Domain.Interfaces
         Task<List<Customer>> GetAllAsync(CancellationToken ct = default);
         Task<Customer?> GetByIdAsync(int id, CancellationToken ct = default);
         Task<bool> UpdateAsync(int id, Customer customer, CancellationToken ct = default);
+        Task<bool> HasOrdersAsync(int customerId, CancellationToken ct = default);
+        Task<bool> DeleteAsync(int id, CancellationToken ct = default);
     }
 }

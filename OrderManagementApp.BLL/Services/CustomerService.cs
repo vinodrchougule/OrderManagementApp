@@ -81,5 +81,20 @@ namespace OrderManagementApp.BLL.Services
 
             return updated;
         }
+
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
+        {
+            var hasOrders = await _customerRepository.HasOrdersAsync(id, ct);
+
+            if (hasOrders)
+                throw new ValidationException("Cannot delete customer because they have existing orders.");
+
+            var deleted = await _customerRepository.DeleteAsync(id, ct);
+
+            if (!deleted)
+                throw new NotFoundException("Customer", "id", id);
+
+            return deleted;
+        }
     }
 }

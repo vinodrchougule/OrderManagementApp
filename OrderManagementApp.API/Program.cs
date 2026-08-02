@@ -113,12 +113,14 @@ builder.Services.AddSingleton<IDbConnectionFactory>(sp => new SqlConnectionFacto
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
 
 //BLL
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IItemService, ItemService>();
 
 SqlMapper.AddTypeHandler(new OrderStatusTypeHandler());
 

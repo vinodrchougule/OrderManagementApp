@@ -17,6 +17,7 @@ namespace OrderManagementApp.DAL
         }
 
         public DbSet<AppUser> AppUsers => Set<AppUser>();
+        public DbSet<AppRole> AppRoles => Set<AppRole>();
         public DbSet<Customer> Customers => Set<Customer>();
         public DbSet<Item> Items => Set<Item>();
         public DbSet<Order> Orders => Set<Order>();
@@ -31,6 +32,7 @@ namespace OrderManagementApp.DAL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new AppUserConfiguration());
+            modelBuilder.ApplyConfiguration(new AppRoleConfiguration());
             modelBuilder.ApplyConfiguration(new CustomerConfiguration());
             modelBuilder.ApplyConfiguration(new ItemConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());

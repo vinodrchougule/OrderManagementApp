@@ -1,14 +1,11 @@
 using FluentValidation;
-using OrderManagementApp.Common.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using OrderManagementApp.BLL.Features.AppRoles.Commands;
 
 namespace OrderManagementApp.BLL.Validators
 {
-    public class UpdateAppRoleRequestValidator : AbstractValidator<UpdateAppRoleRequest>
+    public class UpdateAppRoleCommandValidator : AbstractValidator<UpdateAppRoleCommand>
     {
-        public UpdateAppRoleRequestValidator()
+        public UpdateAppRoleCommandValidator()
         {
             RuleFor(r => r.Id)
                 .GreaterThan(0).WithMessage("Role Id is required.");

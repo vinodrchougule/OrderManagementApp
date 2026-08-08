@@ -1,3 +1,4 @@
+using OrderManagementApp.BLL.Features.AppRoles.Commands;
 using OrderManagementApp.Common.DTOs;
 using OrderManagementApp.Domain.Entities;
 using Riok.Mapperly.Abstractions;
@@ -11,10 +12,10 @@ namespace OrderManagementApp.BLL.Mappers
     public static partial class AppRoleMapper
     {
         [MapperIgnoreTarget(nameof(AppRole.AppRoleId))]
-        public static partial AppRole ToEntity(CreateAppRoleRequest dto);
+        public static partial AppRole ToEntity(CreateAppRoleCommand command);
 
-        [MapProperty(nameof(UpdateAppRoleRequest.Id), nameof(AppRole.AppRoleId))]
-        public static partial AppRole ToEntity(UpdateAppRoleRequest dto);
+        [MapProperty(nameof(UpdateAppRoleCommand.Id), nameof(AppRole.AppRoleId))]
+        public static partial AppRole ToEntity(UpdateAppRoleCommand command);
 
         [MapProperty(nameof(AppRole.AppRoleId), nameof(AppRoleResponse.Id))]
         public static partial AppRoleResponse ToResponse(AppRole appRole);

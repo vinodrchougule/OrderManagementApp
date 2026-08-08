@@ -1,14 +1,11 @@
 using FluentValidation;
-using OrderManagementApp.Common.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using OrderManagementApp.BLL.Features.AppRoles.Commands;
 
 namespace OrderManagementApp.BLL.Validators
 {
-    public class CreateAppRoleRequestValidator : AbstractValidator<CreateAppRoleRequest>
+    public class CreateAppRoleCommandValidator : AbstractValidator<CreateAppRoleCommand>
     {
-        public CreateAppRoleRequestValidator()
+        public CreateAppRoleCommandValidator()
         {
             RuleFor(r => r.RoleName)
                 .NotEmpty().WithMessage("Role Name is required.")

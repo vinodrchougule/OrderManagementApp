@@ -2,9 +2,12 @@ using Dapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using FluentValidation;
+using MediatR;
 using Microsoft.OpenApi;
 using OrderManagementApp.API.Middleware;
 using OrderManagementApp.API.Services;
+using OrderManagementApp.BLL.Behaviors;
 using OrderManagementApp.BLL.Interfaces;
 using OrderManagementApp.BLL.Services;
 using OrderManagementApp.Common.Data;
@@ -122,7 +125,14 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IItemService, ItemService>();
-builder.Services.AddScoped<IAppRoleService, AppRoleService>();
+
+//MediatR + FluentValidation pipeline
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(IOrderService).Assembly);
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+builder.Services.AddValidatorsFromAssembly(typeof(IOrderService).Assembly);
 
 SqlMapper.AddTypeHandler(new OrderStatusTypeHandler());
 

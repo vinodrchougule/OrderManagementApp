@@ -1,6 +1,8 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OrderManagementApp.BLL.Interfaces;
+using OrderManagementApp.BLL.Features.AppRoles.Commands;
+using OrderManagementApp.BLL.Features.AppRoles.Queries;
 using OrderManagementApp.Common.DTOs;
 
 namespace OrderManagementApp.API.Controllers
@@ -10,33 +12,33 @@ namespace OrderManagementApp.API.Controllers
     [Authorize]
     public class AppRoleController : ControllerBase
     {
-        private readonly IAppRoleService _appRoleService;
+        private readonly IMediator _mediator;
         private readonly ILogger<AppRoleController> _logger;
 
-        public AppRoleController(IAppRoleService appRoleService, ILogger<AppRoleController> logger)
+        public AppRoleController(IMediator mediator, ILogger<AppRoleController> logger)
         {
-            _appRoleService = appRoleService;
+            _mediator = mediator;
             _logger = logger;
         }
 
         [HttpPost]
         public async Task<ActionResult<AppRoleResponse>> Create([FromBody] CreateAppRoleRequest createAppRoleRequest, CancellationToken ct)
         {
-            var appRole = await _appRoleService.CreateAsync(createAppRoleRequest, ct);
+            var appRole = await _mediator.Send(new CreateAppRoleCommand(createAppRoleRequest.RoleName), ct);
             return Ok(appRole);
         }
 
         [HttpGet]
         public async Task<ActionResult<List<AppRoleResponse>>> GetAll(CancellationToken ct)
         {
-            var appRoles = await _appRoleService.GetAllAsync(ct);
+            var appRoles = await _mediator.Send(new GetAllAppRolesQuery(), ct);
             return Ok(appRoles);
         }
 
         [HttpGet("{id:long}")]
         public async Task<ActionResult<AppRoleResponse>> GetById(long id, CancellationToken ct)
         {
-            var appRole = await _appRoleService.GetByIdAsync(id, ct);
+            var appRole = await _mediator.Send(new GetAppRoleByIdQuery(id), ct);
             return Ok(appRole);
         }
 
@@ -46,7 +48,7 @@ namespace OrderManagementApp.API.Controllers
             if (id != updateAppRoleRequest.Id)
                 return BadRequest("Route Id and Request body Id do not match");
 
-            var updated = await _appRoleService.UpdateAsync(id, updateAppRoleRequest, ct);
+            var updated = await _mediator.Send(new UpdateAppRoleCommand(id, updateAppRoleRequest.RoleName), ct);
 
             if (!updated)
                 return BadRequest("Update failed.");
@@ -57,7 +59,7 @@ namespace OrderManagementApp.API.Controllers
         [HttpDelete("{id:long}")]
         public async Task<ActionResult> Delete(long id, CancellationToken ct)
         {
-            var deleted = await _appRoleService.DeleteAsync(id, ct);
+            var deleted = await _mediator.Send(new DeleteAppRoleCommand(id), ct);
 
             if (!deleted)
                 return BadRequest("Delete failed.");

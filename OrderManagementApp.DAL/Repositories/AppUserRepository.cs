@@ -43,6 +43,28 @@ namespace OrderManagementApp.DAL.Repositories
             }
         }
 
+        public async Task<bool> ExistsByUsernameAsync(string username, int? excludeId = null, CancellationToken ct = default)
+        {
+            return await _appDbContext.AppUsers
+                                     .AsNoTracking()
+                                     .AnyAsync(u => u.Username == username && (excludeId == null || u.Id != excludeId), ct);
+        }
+
+        public async Task<bool> ExistsByEmailAsync(string email, int? excludeId = null, CancellationToken ct = default)
+        {
+            return await _appDbContext.AppUsers
+                                     .AsNoTracking()
+                                     .AnyAsync(u => u.Email == email && (excludeId == null || u.Id != excludeId), ct);
+        }
+
+        public async Task<List<AppUser>> GetAllAsync(CancellationToken ct = default)
+        {
+            return await _appDbContext.AppUsers
+                                     .AsNoTracking()
+                                     .OrderBy(u => u.Username)
+                                     .ToListAsync(ct);
+        }
+
         public async Task<AppUser?> GetByIdAsync(int id, CancellationToken ct = default)
         {
             return await _appDbContext.AppUsers
@@ -62,6 +84,38 @@ namespace OrderManagementApp.DAL.Repositories
             return await _appDbContext.AppUsers
                                      .AsNoTracking()
                                      .FirstOrDefaultAsync(x => x.Email == email, ct);
+        }
+
+        public async Task<bool> UpdateAsync(int id, AppUser appUser, CancellationToken ct = default)
+        {
+            await using IDbContextTransaction dbContextTransaction = await _appDbContext.Database.BeginTransactionAsync(ct);
+
+            try
+            {
+                var existingAppUser = await _appDbContext.AppUsers.FirstOrDefaultAsync(u => u.Id == id, ct);
+
+                if (existingAppUser is null)
+                {
+                    await dbContextTransaction.RollbackAsync(ct);
+                    return false;
+                }
+
+                existingAppUser.Username = appUser.Username;
+                existingAppUser.Email    = appUser.Email;
+                existingAppUser.Role     = appUser.Role;
+
+                await _appDbContext.SaveChangesAsync(ct);
+                await dbContextTransaction.CommitAsync(ct);
+
+                _logger.LogInformation("AppUser id {AppUserId} updated successfully.", id);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await dbContextTransaction.RollbackAsync(ct);
+                _logger.LogError(ex, "Error updating app user id {AppUserId}.", id);
+                throw;
+            }
         }
 
         public async Task UpdateRefreshTokenAsync(int userId, string? refreshToken, DateTime? expiry, CancellationToken ct = default)
@@ -115,6 +169,42 @@ namespace OrderManagementApp.DAL.Repositories
                 _logger.LogError(ex, "Error occurred while updating password for user with ID {UserId}.", userId);
                 throw;
             }
+        }
+
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
+        {
+            await using IDbContextTransaction dbContextTransaction = await _appDbContext.Database.BeginTransactionAsync(ct);
+
+            try
+            {
+                var existingAppUser = await _appDbContext.AppUsers.FirstOrDefaultAsync(u => u.Id == id, ct);
+
+                if (existingAppUser is null)
+                {
+                    await dbContextTransaction.RollbackAsync(ct);
+                    return false;
+                }
+
+                _appDbContext.AppUsers.Remove(existingAppUser);
+                await _appDbContext.SaveChangesAsync(ct);
+                await dbContextTransaction.CommitAsync(ct);
+
+                _logger.LogInformation("AppUser id {AppUserId} deleted successfully.", id);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await dbContextTransaction.RollbackAsync(ct);
+                _logger.LogError(ex, "Error deleting app user id {AppUserId}.", id);
+                throw;
+            }
+        }
+
+        public async Task<bool> ExistsInAuditLogAsync(string username, CancellationToken ct = default)
+        {
+            return await _appDbContext.AuditLogs
+                                     .AsNoTracking()
+                                     .AnyAsync(a => a.ChangedBy == username, ct);
         }
     }
 }

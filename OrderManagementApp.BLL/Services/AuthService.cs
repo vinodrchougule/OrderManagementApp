@@ -87,9 +87,7 @@ namespace OrderManagementApp.BLL.Services
             if (userByUsername is null)
                 throw new ValidationException("Invalid Username");
 
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(loginRequest.Password);
-
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginRequest.Password , passwordHash);
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginRequest.Password, userByUsername.PasswordHash);
 
             if(!isPasswordValid)
                 throw new ValidationException("Invalid Password");

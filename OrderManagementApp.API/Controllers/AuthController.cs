@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrderManagementApp.BLL.Features.Users.Commands;
 using OrderManagementApp.BLL.Interfaces;
 using OrderManagementApp.Common.DTOs.Auth;
 using System.Security.Claims;
@@ -12,9 +14,11 @@ namespace OrderManagementApp.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private readonly IMediator _mediator;
+        public AuthController(IAuthService authService, IMediator mediator)
         {
             _authService = authService;
+            _mediator = mediator;
         }
 
         //Test changes to test on this laptop
@@ -54,6 +58,23 @@ namespace OrderManagementApp.API.Controllers
 
             string result = await _authService.RevokeTokenAsync(userName, ct);
             return Ok(result);
+        }
+
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest, CancellationToken ct)
+        {
+            var command = new ChangePasswordCommand(
+                changePasswordRequest.Username ?? string.Empty,
+                changePasswordRequest.CurrentPassword ?? string.Empty,
+                changePasswordRequest.NewPassword ?? string.Empty);
+
+            var updated = await _mediator.Send(command, ct);
+
+            if (!updated)
+                return BadRequest("Password change failed.");
+
+            return Ok("Password changed successfully.");
         }
     }
 }

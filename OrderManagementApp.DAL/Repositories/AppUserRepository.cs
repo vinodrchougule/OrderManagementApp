@@ -85,5 +85,36 @@ namespace OrderManagementApp.DAL.Repositories
                 throw;
             }
         }
+
+        public async Task<bool> UpdatePasswordAsync(int userId, string newPasswordHash, CancellationToken ct = default)
+        {
+            await using IDbContextTransaction dbContextTransaction = await _appDbContext.Database.BeginTransactionAsync(ct);
+
+            try
+            {
+                var user = await _appDbContext.AppUsers
+                                        .FirstOrDefaultAsync(u => u.Id == userId, ct);
+
+                if (user is null)
+                {
+                    await dbContextTransaction.RollbackAsync(ct);
+                    return false;
+                }
+
+                user.PasswordHash = newPasswordHash;
+
+                await _appDbContext.SaveChangesAsync(ct);
+                await dbContextTransaction.CommitAsync(ct);
+
+                _logger.LogInformation("Password updated successfully for user with ID {UserId}.", userId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await dbContextTransaction.RollbackAsync(ct);
+                _logger.LogError(ex, "Error occurred while updating password for user with ID {UserId}.", userId);
+                throw;
+            }
+        }
     }
 }

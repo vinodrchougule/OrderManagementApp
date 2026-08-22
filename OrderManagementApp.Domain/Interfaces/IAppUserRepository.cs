@@ -12,5 +12,6 @@ namespace OrderManagementApp.Domain.Interfaces
         Task<AppUser?> GetByUsernameAsync(string username, CancellationToken ct = default);
         Task<AppUser?> GetByEmailAsync(string email, CancellationToken ct = default);
         Task UpdateRefreshTokenAsync(int userId, string? refreshToken, DateTime? expiry, CancellationToken ct = default);
+        Task<bool> UpdatePasswordAsync(int userId, string newPasswordHash, CancellationToken ct = default);
     }
 }

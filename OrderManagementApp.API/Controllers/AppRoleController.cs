@@ -9,7 +9,6 @@ namespace OrderManagementApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class AppRoleController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -22,6 +21,7 @@ namespace OrderManagementApp.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<AppRoleResponse>> Create([FromBody] CreateAppRoleRequest createAppRoleRequest, CancellationToken ct)
         {
             var appRole = await _mediator.Send(new CreateAppRoleCommand(createAppRoleRequest.RoleName), ct);
@@ -29,6 +29,7 @@ namespace OrderManagementApp.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<AppRoleResponse>>> GetAll(CancellationToken ct)
         {
             var appRoles = await _mediator.Send(new GetAllAppRolesQuery(), ct);
@@ -36,6 +37,7 @@ namespace OrderManagementApp.API.Controllers
         }
 
         [HttpGet("{id:long}")]
+        [Authorize]
         public async Task<ActionResult<AppRoleResponse>> GetById(long id, CancellationToken ct)
         {
             var appRole = await _mediator.Send(new GetAppRoleByIdQuery(id), ct);
@@ -43,6 +45,7 @@ namespace OrderManagementApp.API.Controllers
         }
 
         [HttpPut("{id:long}")]
+        [Authorize]
         public async Task<ActionResult> Update(long id, [FromBody] UpdateAppRoleRequest updateAppRoleRequest, CancellationToken ct)
         {
             if (id != updateAppRoleRequest.Id)
@@ -57,6 +60,7 @@ namespace OrderManagementApp.API.Controllers
         }
 
         [HttpDelete("{id:long}")]
+        [Authorize]
         public async Task<ActionResult> Delete(long id, CancellationToken ct)
         {
             var deleted = await _mediator.Send(new DeleteAppRoleCommand(id), ct);

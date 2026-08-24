@@ -171,6 +171,92 @@ namespace OrderManagementApp.DAL.Repositories
             }
         }
 
+        public async Task UpdateLoginAttemptStatusAsync(int userId, int failedLoginAttempts, DateTime? lockoutEndUtc, CancellationToken ct = default)
+        {
+            try
+            {
+                var user = await _appDbContext.AppUsers
+                                        .FirstOrDefaultAsync(u => u.Id == userId, ct);
+
+                if (user is null)
+                    return;
+
+                user.FailedLoginAttempts = failedLoginAttempts;
+                user.LockoutEndUtc = lockoutEndUtc;
+
+                await _appDbContext.SaveChangesAsync(ct);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating login attempt status for user with ID {UserId}.", userId);
+                throw;
+            }
+        }
+
+        public async Task SetPasswordResetTokenAsync(int userId, string resetToken, DateTime expiry, CancellationToken ct = default)
+        {
+            try
+            {
+                var user = await _appDbContext.AppUsers
+                                        .FirstOrDefaultAsync(u => u.Id == userId, ct);
+
+                if (user is null)
+                    return;
+
+                user.PasswordResetToken = resetToken;
+                user.PasswordResetTokenExpiry = expiry;
+
+                await _appDbContext.SaveChangesAsync(ct);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while setting password reset token for user with ID {UserId}.", userId);
+                throw;
+            }
+        }
+
+        public async Task<AppUser?> GetByValidPasswordResetTokenAsync(string resetToken, CancellationToken ct = default)
+        {
+            return await _appDbContext.AppUsers
+                                     .AsNoTracking()
+                                     .FirstOrDefaultAsync(u => u.PasswordResetToken == resetToken
+                                                            && u.PasswordResetTokenExpiry != null
+                                                            && u.PasswordResetTokenExpiry > DateTime.UtcNow, ct);
+        }
+
+        public async Task<bool> ResetPasswordAsync(int userId, string newPasswordHash, CancellationToken ct = default)
+        {
+            await using IDbContextTransaction dbContextTransaction = await _appDbContext.Database.BeginTransactionAsync(ct);
+
+            try
+            {
+                var user = await _appDbContext.AppUsers
+                                        .FirstOrDefaultAsync(u => u.Id == userId, ct);
+
+                if (user is null)
+                {
+                    await dbContextTransaction.RollbackAsync(ct);
+                    return false;
+                }
+
+                user.PasswordHash = newPasswordHash;
+                user.PasswordResetToken = null;
+                user.PasswordResetTokenExpiry = null;
+
+                await _appDbContext.SaveChangesAsync(ct);
+                await dbContextTransaction.CommitAsync(ct);
+
+                _logger.LogInformation("Password reset successfully for user with ID {UserId}.", userId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await dbContextTransaction.RollbackAsync(ct);
+                _logger.LogError(ex, "Error occurred while resetting password for user with ID {UserId}.", userId);
+                throw;
+            }
+        }
+
         public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
         {
             await using IDbContextTransaction dbContextTransaction = await _appDbContext.Database.BeginTransactionAsync(ct);

@@ -41,6 +41,20 @@ namespace OrderManagementApp.DAL.Configurations
             builder.Property(u => u.RefreshTokenExpiry)
                    .HasColumnName("RefreshTokenExpiry")
                    .HasColumnType("datetime2(7)");
+            builder.Property(u => u.PasswordResetToken)
+                   .HasColumnName("PasswordResetToken")
+                   .HasColumnType("nvarchar(max)");
+            builder.Property(u => u.PasswordResetTokenExpiry)
+                   .HasColumnName("PasswordResetTokenExpiry")
+                   .HasColumnType("datetime2(7)");
+            builder.Property(u => u.FailedLoginAttempts)
+                   .HasColumnName("FailedLoginAttempts")
+                   .HasColumnType("int")
+                   .HasDefaultValue(0)
+                   .IsRequired();
+            builder.Property(u => u.LockoutEndUtc)
+                   .HasColumnName("LockoutEndUtc")
+                   .HasColumnType("datetime2(7)");
         }
     }
 }

@@ -76,5 +76,32 @@ namespace OrderManagementApp.API.Controllers
 
             return Ok("Password changed successfully.");
         }
+
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequest forgotPasswordRequest, CancellationToken ct)
+        {
+            var command = new ForgotPasswordCommand(forgotPasswordRequest.Email ?? string.Empty);
+
+            await _mediator.Send(command, ct);
+
+            return Ok("If an account with that email exists, a password reset link has been sent.");
+        }
+
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest, CancellationToken ct)
+        {
+            var command = new ResetPasswordCommand(
+                resetPasswordRequest.Token ?? string.Empty,
+                resetPasswordRequest.NewPassword ?? string.Empty);
+
+            var updated = await _mediator.Send(command, ct);
+
+            if (!updated)
+                return BadRequest("Password reset failed.");
+
+            return Ok("Password has been reset successfully.");
+        }
     }
 }

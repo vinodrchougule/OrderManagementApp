@@ -17,6 +17,10 @@ namespace OrderManagementApp.Domain.Interfaces
         Task<bool> UpdateAsync(int id, AppUser appUser, CancellationToken ct = default);
         Task UpdateRefreshTokenAsync(int userId, string? refreshToken, DateTime? expiry, CancellationToken ct = default);
         Task<bool> UpdatePasswordAsync(int userId, string newPasswordHash, CancellationToken ct = default);
+        Task UpdateLoginAttemptStatusAsync(int userId, int failedLoginAttempts, DateTime? lockoutEndUtc, CancellationToken ct = default);
+        Task SetPasswordResetTokenAsync(int userId, string resetToken, DateTime expiry, CancellationToken ct = default);
+        Task<AppUser?> GetByValidPasswordResetTokenAsync(string resetToken, CancellationToken ct = default);
+        Task<bool> ResetPasswordAsync(int userId, string newPasswordHash, CancellationToken ct = default);
         Task<bool> DeleteAsync(int id, CancellationToken ct = default);
         Task<bool> ExistsInAuditLogAsync(string username, CancellationToken ct = default);
     }

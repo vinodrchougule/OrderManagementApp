@@ -17,14 +17,16 @@ namespace OrderManagementApp.BLL.Services
         private readonly LoginRequestValidator _loginRequestValidator;
         private readonly IJwtTokenService _jwtTokenService;
         private readonly JwtSettings _jwtSettings;
+        private readonly AccountLockoutSettings _accountLockoutSettings;
 
-        public AuthService(IAppUserRepository appUserRepository, IOptions<JwtSettings> jwtSettings, IJwtTokenService jwtTokenService)
+        public AuthService(IAppUserRepository appUserRepository, IOptions<JwtSettings> jwtSettings, IOptions<AccountLockoutSettings> accountLockoutSettings, IJwtTokenService jwtTokenService)
         {
             _appUserRepository = appUserRepository;
             _registerUserRequestValidator = new RegisterUserRequestValidator();
             _loginRequestValidator = new LoginRequestValidator();
             _jwtTokenService = jwtTokenService;
             _jwtSettings = jwtSettings.Value;
+            _accountLockoutSettings = accountLockoutSettings.Value;
         }
 
         public async Task<AuthResponse> RegisterAsync(RegisterUserRequest registerUserRequest, CancellationToken ct = default)
@@ -87,10 +89,35 @@ namespace OrderManagementApp.BLL.Services
             if (userByUsername is null)
                 throw new ValidationException("Invalid Username");
 
+            bool lockoutExpired = userByUsername.LockoutEndUtc.HasValue && userByUsername.LockoutEndUtc.Value <= DateTime.UtcNow;
+
+            if (userByUsername.LockoutEndUtc.HasValue && !lockoutExpired)
+            {
+                var minutesRemaining = (int)Math.Ceiling((userByUsername.LockoutEndUtc.Value - DateTime.UtcNow).TotalMinutes);
+                throw new ValidationException($"Account locked due to too many failed login attempts. Try again after {minutesRemaining} minute(s).");
+            }
+
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginRequest.Password, userByUsername.PasswordHash);
 
-            if(!isPasswordValid)
-                throw new ValidationException("Invalid Password");
+            if (!isPasswordValid)
+            {
+                int currentAttempts = lockoutExpired ? 0 : userByUsername.FailedLoginAttempts;
+                int updatedAttempts = currentAttempts + 1;
+
+                if (updatedAttempts >= _accountLockoutSettings.MaxFailedAttempts)
+                {
+                    var lockoutEndUtc = DateTime.UtcNow.AddMinutes(_accountLockoutSettings.LockoutDurationMinutes);
+                    await _appUserRepository.UpdateLoginAttemptStatusAsync(userByUsername.Id, updatedAttempts, lockoutEndUtc, ct);
+                    throw new ValidationException($"Account locked due to too many failed login attempts. Try again after {_accountLockoutSettings.LockoutDurationMinutes} minute(s).");
+                }
+
+                await _appUserRepository.UpdateLoginAttemptStatusAsync(userByUsername.Id, updatedAttempts, null, ct);
+                int attemptsLeft = _accountLockoutSettings.MaxFailedAttempts - updatedAttempts;
+                throw new ValidationException($"Incorrect password. You have {attemptsLeft} attempt(s) left.");
+            }
+
+            if (userByUsername.FailedLoginAttempts != 0 || userByUsername.LockoutEndUtc.HasValue)
+                await _appUserRepository.UpdateLoginAttemptStatusAsync(userByUsername.Id, 0, null, ct);
 
             var accessToken = _jwtTokenService.GenerateAccessToken(userByUsername);
             var refreshToken = _jwtTokenService.GenerateRefreshToken();

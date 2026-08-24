@@ -77,6 +77,11 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Test
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()!;
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
+//Smtp / Password Reset Settings
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+builder.Services.Configure<PasswordResetSettings>(builder.Configuration.GetSection("PasswordReset"));
+builder.Services.Configure<AccountLockoutSettings>(builder.Configuration.GetSection("AccountLockout"));
+
 //Authentication
 builder.Services.AddAuthentication(options =>
                     {
@@ -123,6 +128,7 @@ builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 

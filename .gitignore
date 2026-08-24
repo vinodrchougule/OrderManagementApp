@@ -32,3 +32,6 @@ Thumbs.db
 
 # Test results
 [Tt]est[Rr]esult*/
+
+# App settings (may contain secrets)
+OrderManagementApp.API/appsettings.json
